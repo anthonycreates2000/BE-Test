@@ -46,7 +46,7 @@ app.get("/websocket", (req, res) => {
 })
 
 app.get("/get_livethreat_attacks", async (req, res) => {
-  await getData()
+  await getData(req, res);
 })
 // routes
 // require("./app/routes/exaole.routes")(app);
