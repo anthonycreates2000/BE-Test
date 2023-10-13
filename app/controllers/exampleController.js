@@ -89,6 +89,45 @@ exports.refactoreMe2 = (req, res) => {
   // function ini untuk menjalakan query sql insert dan mengupdate field "dosurvey" yang ada di table user menjadi true, 
   // jika melihat data yang di berikan, salah satu usernnya memiliki dosurvey dengan data false.
 
+  console.log(req.body.userId)
+  console.log(req.body.values)
+
+  // Melakukan insert data ke table survey, dengan updatedAt dan createdAt pada hari ini.
+  try{
+    await db.sequelize.query(`
+      INSERT INTO "surveys" ("userId", "updatedAt", "createdAt", "values")
+      VALUES (${req.body.userId}, now(), now(), ${req.body.values})
+    `);
+  } 
+  catch(error){
+    console.log(err);
+    res.status(500).send({
+      statusCode: 500,
+      message: "Cannot post survey.",
+      success: false,
+    });
+  }
+
+  try{
+    const updateData = await db.sequelize.query(`
+      UPDATE "surveys"
+      SET dosurvey = False
+      WHERE id = ${req.body.id}
+    `)
+    console.log(updateData)
+  }
+  catch(error){
+    console.log(error)
+  }
+
+  res.status(201).send({
+    statusCode: 201,
+    message: "Survey sent successfully!",
+    success: true,
+    updateData,
+  });
+
+
   // Survey.create({
   //   userId: req.body.userId,
   //   values: req.body.values, // [] kirim array
