@@ -1,3 +1,5 @@
+const axios = require("axios");
+const WebSocket = require("ws");
 const db = require("../models");
 // const Model = db.Model;
 // const { Op } = require("sequelize");
@@ -85,15 +87,15 @@ exports.refactoreMe1 = (req, res) => {
     });
 };
 
-exports.refactoreMe2 = (req, res) => {
-  // function ini untuk menjalakan query sql insert dan mengupdate field "dosurvey" yang ada di table user menjadi true, 
+exports.refactoreMe2 = async (req, res) => {
+  // function ini untuk menjalakan query sql insert dan mengupdate field "dosurvey" yang ada di table user menjadi true,
   // jika melihat data yang di berikan, salah satu usernnya memiliki dosurvey dengan data false.
 
   console.log(req.body.userId)
   console.log(req.body.values)
 
   // Melakukan insert data ke table survey, dengan updatedAt dan createdAt pada hari ini.
-  try{
+  try {
     await db.sequelize.query(`
       INSERT INTO "surveys" ("userId", "updatedAt", "createdAt", "values")
       VALUES (${req.body.userId}, now(), now(), ${req.body.values})
@@ -115,7 +117,7 @@ exports.refactoreMe2 = (req, res) => {
       WHERE id = ${req.body.id}
     `)
     console.log(updateData)
-  }
+  } 
   catch(error){
     console.log(error)
   }
@@ -163,8 +165,23 @@ exports.refactoreMe2 = (req, res) => {
   //   });
 };
 
-exports.callmeWebSocket = (req, res) => {
+exports.callmeWebSocket = async (req, res) => {
   // do something
+  try{
+    const LIVE_THREAT_MAP_URL = "https://livethreatmap.radware.com/api/map/attacks?limit=10";
+    const live_threat_response = await axios.get(LIVE_THREAT_MAP_URL);
+    const web_socket_server = await new WebSocket.Server({ noServer: true });
+    const live_threat_response_data = live_threat_response.data;
+
+    web_socket_server.clients.forEach((client) => {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(JSON.stringify(live_threat_response_data));
+      }
+    });
+  }
+  catch(error){
+    console.error(`Error fecthing data from live threat map: ${error}`);
+  }
 };
 
 exports.getData = (req, res) => {
