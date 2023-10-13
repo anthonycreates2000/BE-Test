@@ -186,45 +186,75 @@ exports.callmeWebSocket = async (req, res) => {
 
 exports.getData = async (req, res) => {
   // do something
-  let live_threat_queries = [];
-  const LIVE_THREAT_MAP_URL =
-    "https://livethreatmap.radware.com/api/map/attacks?limit=10";
-  const live_threats_response = await axios.get(LIVE_THREAT_MAP_URL);
-  const live_threats = live_threats_response.data;
-  // console.log(live_threats);
-  const NULL = "NULL"
-  live_threats.forEach((live_threat_per_batch) => {
-    live_threat_per_batch.forEach((live_threat) => {
-      const sourceCountry = live_threat["sourceCountry"] == null ? NULL : `'${live_threat["sourceCountry"]}'`;
-      const destinationCountry = live_threat["destinationCountry"] == null ? NULL : `'${live_threat["destinationCountry"]}'`;
-      const milisecond = live_threat["milisecond"] == null ? NULL : `'${live_threat['milisecond']}'`;
-      const type = `'${live_threat["type"]}'`;
-      const weight = live_threat["weight"];
-      const attackTime = `TO_TIMESTAMP('${live_threat["attackTime"]}', 'YYYY-MM-DDTHH:MI:SS')`;
+  // let live_threat_queries = [];
+  // const LIVE_THREAT_MAP_URL =
+  //   "https://livethreatmap.radware.com/api/map/attacks?limit=10";
+  // const live_threats_response = await axios.get(LIVE_THREAT_MAP_URL);
+  // const live_threats = live_threats_response.data;
+  // // console.log(live_threats);
+  // const NULL = "NULL"
+  // live_threats.forEach((live_threat_per_batch) => {
+  //   live_threat_per_batch.forEach((live_threat) => {
+  //     const sourceCountry = live_threat["sourceCountry"] == null ? NULL : `'${live_threat["sourceCountry"]}'`;
+  //     const destinationCountry = live_threat["destinationCountry"] == null ? NULL : `'${live_threat["destinationCountry"]}'`;
+  //     const milisecond = live_threat["milisecond"] == null ? NULL : `'${live_threat['milisecond']}'`;
+  //     const type = `'${live_threat["type"]}'`;
+  //     const weight = live_threat["weight"];
+  //     const attackTime = `TO_TIMESTAMP('${live_threat["attackTime"]}', 'YYYY-MM-DDTHH:MI:SS')`;
 
-      live_threat_values = [
-        sourceCountry,
-        destinationCountry,
-        milisecond,
-        type,
-        weight,
-        attackTime,
-      ];
+  //     live_threat_values = [
+  //       sourceCountry,
+  //       destinationCountry,
+  //       milisecond,
+  //       type,
+  //       weight,
+  //       attackTime,
+  //     ];
 
-      live_threat_query = "(" + live_threat_values.toString() + ")";
-      live_threat_queries.push(live_threat_query);
-    });
-  });
+  //     live_threat_query = "(" + live_threat_values.toString() + ")";
+  //     live_threat_queries.push(live_threat_query);
+  //   });
+  // });
 
-  try {
-    live_threat_queries_in_string = live_threat_queries.toString();
-    await db.sequelize.query(
-      `INSERT INTO livethreat 
-        ("sourceCountry", "destinationCountry", "milisecond",
-        "type", "weight", "attackTime") VALUES ${live_threat_queries_in_string}`
+  // try {
+  //   live_threat_queries_in_string = live_threat_queries.toString();
+  //   await db.sequelize.query(
+  //     `INSERT INTO livethreat 
+  //       ("sourceCountry", "destinationCountry", "milisecond",
+  //       "type", "weight", "attackTime") VALUES ${live_threat_queries_in_string}`
+  //   );
+  //   console.log("Successfully insert all data to the database.");
+  // } catch (error) {
+  //   console.error(`Error inserting data to livethreat: ${error}`);
+  // }
+
+  COUNT_DESTINATION_COUNTRY = "count_destination_country"
+  COUNT_SOURCE_COUNTRY = "count_source_country";
+
+  try{
+    let attack_count_data = await db.sequelize.query(
+      `
+        SELECT DISTINCT COUNT("destinationCountry") as ${COUNT_DESTINATION_COUNTRY},
+        COUNT("sourceCountry") as ${COUNT_SOURCE_COUNTRY}
+        FROM livethreat;
+      `
     );
-    console.log("Successfully insert all data to the database.");
-  } catch (error) {
-    console.error(`Error inserting data to livethreat: ${error}`);
+
+    attack_count_data = attack_count_data[0][0];
+
+    res.status(201).send({
+      statusCode: 201,
+      success: true,
+      data: {
+        label: [COUNT_DESTINATION_COUNTRY, COUNT_SOURCE_COUNTRY],
+        total: [
+          parseInt(attack_count_data[COUNT_DESTINATION_COUNTRY]),
+          parseInt(attack_count_data[COUNT_SOURCE_COUNTRY]),
+        ],
+      },
+    });
+  }
+  catch(error){
+    console.error(`Error fetching data destination and source country count data: ${error}`);
   }
 };
