@@ -19,6 +19,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // database
 const db = require("./app/models");
+const { callmeWebSocket } = require("./app/controllers/exampleController");
 
 db.sequelize.sync();
 
@@ -33,6 +34,16 @@ db.sequelize.sync();
 app.get("/", (req, res) => {
   res.json({ message: "Hello" });
 });
+
+app.get("/websocket", (req, res) => {
+  function convert_minutes_to_miliseconds(minutes){
+      return minutes * 60 * 1000
+  }
+  setInterval(
+    callmeWebSocket,
+    convert_minutes_to_miliseconds(minutes = 3)
+  );
+})
 
 // routes
 // require("./app/routes/exaole.routes")(app);
