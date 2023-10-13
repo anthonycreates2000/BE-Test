@@ -1,6 +1,10 @@
 const axios = require("axios");
 const WebSocket = require("ws");
 const db = require("../models");
+const Redis = require("ioredis");
+const redis = new Redis();
+
+const LIVE_THREAT_COUNT_DATA_KEY = "livethreat_count_data";
 // const Model = db.Model;
 // const { Op } = require("sequelize");
 
@@ -167,9 +171,14 @@ exports.refactoreMe2 = async (req, res) => {
 
 exports.callmeWebSocket = async (req, res) => {
   // do something
-  try{
-    const LIVE_THREAT_MAP_URL = "https://livethreatmap.radware.com/api/map/attacks?limit=10";
-    const live_threat_response = await axios.get(LIVE_THREAT_MAP_URL);
+  // Check if the data is cached in Redis
+  const livethreat_count_cached_data = await redis.get(
+    LIVE_THREAT_COUNT_DATA_KEY
+  );
+  try {
+    const LIVE_THREAT_MAP_URL =
+      "https://livethreatmap.radware.com/api/map/attacks?limit=10";
+    const live_threat_response = await redis.get(LIVE_THREAT_MAP_URL);
     const web_socket_server = await new WebSocket.Server({ noServer: true });
     const live_threat_response_data = live_threat_response.data;
 
@@ -178,58 +187,78 @@ exports.callmeWebSocket = async (req, res) => {
         client.send(JSON.stringify(live_threat_response_data));
       }
     });
-  }
-  catch(error){
+  } catch (error) {
     console.error(`Error fecthing data from live threat map: ${error}`);
   }
 };
 
 exports.getData = async (req, res) => {
   // do something
-  // let live_threat_queries = [];
-  // const LIVE_THREAT_MAP_URL =
-  //   "https://livethreatmap.radware.com/api/map/attacks?limit=10";
-  // const live_threats_response = await axios.get(LIVE_THREAT_MAP_URL);
-  // const live_threats = live_threats_response.data;
-  // // console.log(live_threats);
-  // const NULL = "NULL"
-  // live_threats.forEach((live_threat_per_batch) => {
-  //   live_threat_per_batch.forEach((live_threat) => {
-  //     const sourceCountry = live_threat["sourceCountry"] == null ? NULL : `'${live_threat["sourceCountry"]}'`;
-  //     const destinationCountry = live_threat["destinationCountry"] == null ? NULL : `'${live_threat["destinationCountry"]}'`;
-  //     const milisecond = live_threat["milisecond"] == null ? NULL : `'${live_threat['milisecond']}'`;
-  //     const type = `'${live_threat["type"]}'`;
-  //     const weight = live_threat["weight"];
-  //     const attackTime = `TO_TIMESTAMP('${live_threat["attackTime"]}', 'YYYY-MM-DDTHH:MI:SS')`;
-
-  //     live_threat_values = [
-  //       sourceCountry,
-  //       destinationCountry,
-  //       milisecond,
-  //       type,
-  //       weight,
-  //       attackTime,
-  //     ];
-
-  //     live_threat_query = "(" + live_threat_values.toString() + ")";
-  //     live_threat_queries.push(live_threat_query);
-  //   });
-  // });
-
-  // try {
-  //   live_threat_queries_in_string = live_threat_queries.toString();
-  //   await db.sequelize.query(
-  //     `INSERT INTO livethreat 
-  //       ("sourceCountry", "destinationCountry", "milisecond",
-  //       "type", "weight", "attackTime") VALUES ${live_threat_queries_in_string}`
-  //   );
-  //   console.log("Successfully insert all data to the database.");
-  // } catch (error) {
-  //   console.error(`Error inserting data to livethreat: ${error}`);
-  // }
-
-  COUNT_DESTINATION_COUNTRY = "count_destination_country"
+  const livethreat_count_cached_data = await redis.get(
+    LIVE_THREAT_COUNT_DATA_KEY
+  );
+  COUNT_DESTINATION_COUNTRY = "count_destination_country";
   COUNT_SOURCE_COUNTRY = "count_source_country";
+
+  if (livethreat_count_cached_data) {
+    console.log("Loading live threat count data from redis cache...");
+    const attack_count_data =  JSON.parse(livethreat_count_cached_data);
+    res.status(201).send({
+      statusCode: 201,
+      success: true,
+      data: {
+        label: [COUNT_DESTINATION_COUNTRY, COUNT_SOURCE_COUNTRY],
+        total: [
+          parseInt(attack_count_data[COUNT_DESTINATION_COUNTRY]),
+          parseInt(attack_count_data[COUNT_SOURCE_COUNTRY]),
+        ],
+      },
+    });
+    return;
+  }
+
+  let live_threat_queries = [];
+  const LIVE_THREAT_MAP_URL =
+    "https://livethreatmap.radware.com/api/map/attacks?limit=10";
+
+  const live_threats_response = await axios.get(LIVE_THREAT_MAP_URL);
+  const live_threats = live_threats_response.data;
+  // console.log(live_threats);
+  const NULL = "NULL"
+  live_threats.forEach((live_threat_per_batch) => {
+    live_threat_per_batch.forEach((live_threat) => {
+      const sourceCountry = live_threat["sourceCountry"] == null ? NULL : `'${live_threat["sourceCountry"]}'`;
+      const destinationCountry = live_threat["destinationCountry"] == null ? NULL : `'${live_threat["destinationCountry"]}'`;
+      const milisecond = live_threat["milisecond"] == null ? NULL : `'${live_threat['milisecond']}'`;
+      const type = `'${live_threat["type"]}'`;
+      const weight = live_threat["weight"];
+      const attackTime = `TO_TIMESTAMP('${live_threat["attackTime"]}', 'YYYY-MM-DDTHH:MI:SS')`;
+
+      live_threat_values = [
+        sourceCountry,
+        destinationCountry,
+        milisecond,
+        type,
+        weight,
+        attackTime,
+      ];
+
+      live_threat_query = "(" + live_threat_values.toString() + ")";
+      live_threat_queries.push(live_threat_query);
+    });
+  });
+
+  try {
+    live_threat_queries_in_string = live_threat_queries.toString();
+    await db.sequelize.query(
+      `INSERT INTO livethreat 
+        ("sourceCountry", "destinationCountry", "milisecond",
+        "type", "weight", "attackTime") VALUES ${live_threat_queries_in_string}`
+    );
+    console.log("Successfully insert all data to the database.");
+  } catch (error) {
+    console.error(`Error inserting data to livethreat: ${error}`);
+  }
 
   try{
     let attack_count_data = await db.sequelize.query(
@@ -241,6 +270,9 @@ exports.getData = async (req, res) => {
     );
 
     attack_count_data = attack_count_data[0][0];
+
+    // Kode di bawah menunjukkan bahwa redis akan menyimpan data selama 15 menit.
+    await redis.set(LIVE_THREAT_COUNT_DATA_KEY, JSON.stringify(attack_count_data), "EX", 900); 
 
     res.status(201).send({
       statusCode: 201,
