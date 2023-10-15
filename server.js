@@ -2,6 +2,8 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const dotenv = require("dotenv");
+const authenticatewithJWT = require("./app/middleware/authMiddleware");
+const checkUserRole = require("./app/middleware/roleMiddleware");
 dotenv.config();
 const app = express();
 
@@ -48,6 +50,28 @@ app.get("/websocket", (req, res) => {
 app.get("/get_livethreat_attacks", async (req, res) => {
   await getData(req, res);
 })
+
+
+// Contoh penggunaan middleware autentikasi pada aplikasi.
+app.get(
+  "/get_livethreat_attacks_authorized",
+  authenticatewithJWT,
+  async (req, res) => {
+    await getData(req, res);
+  }
+);
+
+// Contoh penggunaan middleware pengecekan autentikasi, lalu cek role user pada aplikasi.
+app.get(
+  "/get_livethreat_attacks_admin",
+  authenticatewithJWT,
+  checkUserRole("admin"),
+  async (req, res) => {
+    await getData(req, res);
+  }
+);
+
+
 // routes
 // require("./app/routes/exaole.routes")(app);
 
