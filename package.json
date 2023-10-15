@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon server.js"
+    "start": "nodemon server.js",
+    "test": "jest"
   },
   "author": "daffaquraisy",
   "license": "ISC",
@@ -24,5 +25,10 @@
     "pg": "^8.7.3",
     "sequelize": "^6.16.0",
     "ws": "^8.13.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "superagent": "^8.1.2",
+    "supertest": "^6.3.3"
   }
 }
