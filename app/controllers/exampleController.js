@@ -5,6 +5,7 @@ const Redis = require("ioredis");
 const redis = new Redis();
 
 const LIVE_THREAT_COUNT_DATA_KEY = "livethreat_count_data";
+const LIVE_THREAT_MAP_URL = "https://livethreatmap.radware.com/api/map/attacks?limit=10";
 // const Model = db.Model;
 // const { Op } = require("sequelize");
 
@@ -172,12 +173,7 @@ exports.refactoreMe2 = async (req, res) => {
 exports.callmeWebSocket = async (req, res) => {
   // do something
   // Check if the data is cached in Redis
-  const livethreat_count_cached_data = await redis.get(
-    LIVE_THREAT_COUNT_DATA_KEY
-  );
   try {
-    const LIVE_THREAT_MAP_URL =
-      "https://livethreatmap.radware.com/api/map/attacks?limit=10";
     const live_threat_response = await redis.get(LIVE_THREAT_MAP_URL);
     const web_socket_server = await new WebSocket.Server({ noServer: true });
     const live_threat_response_data = live_threat_response.data;
@@ -192,44 +188,39 @@ exports.callmeWebSocket = async (req, res) => {
   }
 };
 
-exports.getData = async (req, res) => {
-  // do something
+const getLivethreatRedisCache = async () => {
   const livethreat_count_cached_data = await redis.get(
     LIVE_THREAT_COUNT_DATA_KEY
   );
-  COUNT_DESTINATION_COUNTRY = "count_destination_country";
-  COUNT_SOURCE_COUNTRY = "count_source_country";
 
   if (livethreat_count_cached_data) {
     console.log("Loading live threat count data from redis cache...");
-    const attack_count_data =  JSON.parse(livethreat_count_cached_data);
-    res.status(201).send({
-      statusCode: 201,
-      success: true,
-      data: {
-        label: [COUNT_DESTINATION_COUNTRY, COUNT_SOURCE_COUNTRY],
-        total: [
-          parseInt(attack_count_data[COUNT_DESTINATION_COUNTRY]),
-          parseInt(attack_count_data[COUNT_SOURCE_COUNTRY]),
-        ],
-      },
-    });
-    return;
+    const attack_count_data = JSON.parse(livethreat_count_cached_data);
+    return attack_count_data;
   }
+  return null;
+}
 
+const getLivethreatDataFromAPI = async () => {
   let live_threat_queries = [];
-  const LIVE_THREAT_MAP_URL =
-    "https://livethreatmap.radware.com/api/map/attacks?limit=10";
-
   const live_threats_response = await axios.get(LIVE_THREAT_MAP_URL);
   const live_threats = live_threats_response.data;
   // console.log(live_threats);
-  const NULL = "NULL"
+  const NULL = "NULL";
   live_threats.forEach((live_threat_per_batch) => {
     live_threat_per_batch.forEach((live_threat) => {
-      const sourceCountry = live_threat["sourceCountry"] == null ? NULL : `'${live_threat["sourceCountry"]}'`;
-      const destinationCountry = live_threat["destinationCountry"] == null ? NULL : `'${live_threat["destinationCountry"]}'`;
-      const milisecond = live_threat["milisecond"] == null ? NULL : `'${live_threat['milisecond']}'`;
+      const sourceCountry =
+        live_threat["sourceCountry"] == null
+          ? NULL
+          : `'${live_threat["sourceCountry"]}'`;
+      const destinationCountry =
+        live_threat["destinationCountry"] == null
+          ? NULL
+          : `'${live_threat["destinationCountry"]}'`;
+      const milisecond =
+        live_threat["milisecond"] == null
+          ? NULL
+          : `'${live_threat["milisecond"]}'`;
       const type = `'${live_threat["type"]}'`;
       const weight = live_threat["weight"];
       const attackTime = `TO_TIMESTAMP('${live_threat["attackTime"]}', 'YYYY-MM-DDTHH:MI:SS')`;
@@ -247,32 +238,76 @@ exports.getData = async (req, res) => {
       live_threat_queries.push(live_threat_query);
     });
   });
+  return live_threat_queries;
+}
 
+const insertLivethreatDataToDatabase = async (live_threat_queries) => {
   try {
     live_threat_queries_in_string = live_threat_queries.toString();
     await db.sequelize.query(
       `INSERT INTO livethreat 
-        ("sourceCountry", "destinationCountry", "milisecond",
-        "type", "weight", "attackTime") VALUES ${live_threat_queries_in_string}`
+          ("sourceCountry", "destinationCountry", "milisecond",
+          "type", "weight", "attackTime") VALUES ${live_threat_queries_in_string}`
     );
     console.log("Successfully insert all data to the database.");
   } catch (error) {
     console.error(`Error inserting data to livethreat: ${error}`);
   }
+}
 
-  try{
-    let attack_count_data = await db.sequelize.query(
+const getThreatCountDataFromDatabase = async (court_destination_country, court_source_country) => {
+  let attack_count_data = await db.sequelize.query(
       `
-        SELECT DISTINCT COUNT("destinationCountry") as ${COUNT_DESTINATION_COUNTRY},
-        COUNT("sourceCountry") as ${COUNT_SOURCE_COUNTRY}
+        SELECT DISTINCT COUNT("destinationCountry") as ${court_destination_country},
+        COUNT("sourceCountry") as ${court_source_country}
         FROM livethreat;
       `
     );
 
-    attack_count_data = attack_count_data[0][0];
+  attack_count_data = attack_count_data[0][0];
+  return attack_count_data;
+}
 
-    // Kode di bawah menunjukkan bahwa redis akan menyimpan data selama 15 menit.
-    await redis.set(LIVE_THREAT_COUNT_DATA_KEY, JSON.stringify(attack_count_data), "EX", 900); 
+const save_livethreat_to_redis = async (attack_count_data) => {
+  // Kode di bawah menunjukkan bahwa redis akan menyimpan data selama 15 menit.
+  await redis.set(LIVE_THREAT_COUNT_DATA_KEY, JSON.stringify(attack_count_data), "EX", 900);
+}
+
+const getData = async (req, res) => {
+  // do something
+
+  COUNT_DESTINATION_COUNTRY = "count_destination_country";
+  COUNT_SOURCE_COUNTRY = "count_source_country";
+
+  const cached_attack_count_data = await getLivethreatRedisCache(
+    COUNT_DESTINATION_COUNTRY,
+    COUNT_SOURCE_COUNTRY
+  );
+
+  if (cached_attack_count_data) {
+    res.status(201).send({
+      statusCode: 201,
+      success: true,
+      data: {
+        label: [court_destination_country, court_source_country],
+        total: [
+          parseInt(attack_count_data[court_destination_country]),
+          parseInt(attack_count_data[court_source_country]),
+        ],
+      },
+    });
+  }
+
+  let live_threat_queries = await getLivethreatDataFromAPI();
+  await insertLivethreatDataToDatabase(live_threat_queries);
+
+  try {
+    const attack_count_data = await getThreatCountDataFromDatabase(
+      COUNT_DESTINATION_COUNTRY,
+      COUNT_SOURCE_COUNTRY
+    );
+
+    await save_livethreat_to_redis(attack_count_data);
 
     res.status(201).send({
       statusCode: 201,
@@ -285,8 +320,16 @@ exports.getData = async (req, res) => {
         ],
       },
     });
+  } catch (error) {
+    console.error(
+      `Error fetching data destination and source country count data: ${error}`
+    );
   }
-  catch(error){
-    console.error(`Error fetching data destination and source country count data: ${error}`);
-  }
-};
+}
+
+exports.getData = getData;
+exports.getLivethreatRedisCache = getLivethreatRedisCache;
+exports.getLivethreatDataFromAPI = getLivethreatDataFromAPI;
+exports.getThreatCountDataFromDatabase = getThreatCountDataFromDatabase;
+exports.insertLivethreatDataToDatabase = insertLivethreatDataToDatabase;
+exports.save_livethreat_to_redis = save_livethreat_to_redis;
