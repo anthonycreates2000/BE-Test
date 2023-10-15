@@ -15,6 +15,31 @@ describe("Tes fungsi getData", () => {
   afterEach(() => {
     sinon.restore();
   });
+  it("Mendapatkan data dari livethreat API", async () => {
+    const {
+      getLivethreatDataFromAPI,
+    } = require("../__tests__/../../app/controllers/exampleController");
+
+    const live_threat_queries = await getLivethreatDataFromAPI();
+
+    // Mengecek apabila data yang diberikan kosong atau tidak.
+    expect(live_threat_queries.length).greaterThan(0);
+
+    // Mengecek key-key yang diberikan dari array tersebut.
+    const expected_keys = [
+      "sourceCountry",
+      "destinationCountry",
+      "millisecond",
+      "type",
+      "weight",
+      "attackTime",
+    ];
+    let first_element_livethreat = live_threat_queries[0][0];
+    let livethreat_keys = Object.keys(first_element_livethreat);
+    console.log(livethreat_keys);
+    expect(livethreat_keys).to.deep.equal(expected_keys);
+  });
+
   it("Mendapatkan data dari redis cache apabila tersedia", async () => {
       const {
         getLivethreatRedisCache,
@@ -22,11 +47,11 @@ describe("Tes fungsi getData", () => {
         save_livethreat_to_redis,
       } = require("../__tests__/../../app/controllers/exampleController");
 
-      let result = await getLivethreatRedisCache(
+      result = await getLivethreatRedisCache(
         COUNT_DESTINATION_COUNTRY,
         COUNT_SOURCE_COUNTRY
       );
-      
+
       // Mengecek apabila data yang diberikan kosong apabila belum dimasukkan data sama sekali (hanya running perintah diatas sekali).
       // CATATAN: Harus menjalankan FLUSHALL terlebih dahulu di redis-cli, agar data di redis sudah kosong.
       expect(result).to.be.null;
