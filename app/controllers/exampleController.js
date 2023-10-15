@@ -202,10 +202,15 @@ const getLivethreatRedisCache = async () => {
 }
 
 const getLivethreatDataFromAPI = async () => {
-  let live_threat_queries = [];
   const live_threats_response = await axios.get(LIVE_THREAT_MAP_URL);
   const live_threats = live_threats_response.data;
-  // console.log(live_threats);
+  return live_threats;
+}
+
+const getLivethreatDataQuery = async () => {
+  let live_threat_queries = [];
+  const live_threats = await getLivethreatDataFromAPI();
+
   const NULL = "NULL";
   live_threats.forEach((live_threat_per_batch) => {
     live_threat_per_batch.forEach((live_threat) => {
@@ -298,7 +303,7 @@ const getData = async (req, res) => {
     });
   }
 
-  let live_threat_queries = await getLivethreatDataFromAPI();
+  let live_threat_queries = await getLivethreatDataQuery();
   await insertLivethreatDataToDatabase(live_threat_queries);
 
   try {
