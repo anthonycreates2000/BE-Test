@@ -16,7 +16,7 @@ COUNT_DESTINATION_COUNTRY = "count_destination_country";
 COUNT_SOURCE_COUNTRY = "count_source_country";
 
 describe('test simple route hello', () => {
-    test('should return a output from the endpoint', async () => {
+    test('Mendapatkan message "Hello"', async () => {
         const expected_response = {
             message: 'Hello'
         }
