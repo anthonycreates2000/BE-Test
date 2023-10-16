@@ -1,4 +1,5 @@
 const axios = require('axios');
+const jwt = require("jsonwebtoken");
 const { getData } = require("../../app/controllers/exampleController");
 const app = require("../../server.js");
 const request = require("supertest");
