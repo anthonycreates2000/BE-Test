@@ -3,7 +3,7 @@ const { getData } = require("../../app/controllers/exampleController");
 const app = require("../../server.js");
 const request = require("supertest")
 
-jest.setTimeout(30000);
+jest.setTimeout(15000);
 
 describe('test simple route hello', () => {
     test('should return a output from the endpoint', async () => {
