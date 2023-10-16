@@ -41,7 +41,7 @@ jobs:
           sudo apt-get install -y postgresql
 
       - name: Execute PostgreSQL command files.
-        run: psql -U myuser -d mydatabase -a -f files/survey.sql
+        run: psql -f files/survey.sql
 
       - name: install production dependencies
         run: npm install --omit=dev
