@@ -51,8 +51,8 @@ jobs:
 
       - name: Execute PostgreSQL command files.
         run: | 
-          pwd
-          sudo -u postgres psql files/survey.sql
+          cd /tmp
+          sudo -u postgres psql /files/survey.sql
 
       - name: install production dependencies
         run: npm install --omit=dev
