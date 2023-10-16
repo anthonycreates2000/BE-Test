@@ -48,3 +48,17 @@ describe('test rute get livethreat attacks', () => {
       should.ok(Number.isSafeInteger(response_data.total[1]));
     });
 });
+
+describe("test rute refactoreMe1", () => {
+  test("mendapatkan nilai rata-rata dari semua 10 survey", async () => {
+    const response = await request(app)
+      .get("/get_average_per_survey")
+      .expect(201);
+
+    const response_data = response.data;
+
+    console.log(`Response data: ${response_data}`);
+
+    expect(response_data.length).equals(10);
+  });
+});
