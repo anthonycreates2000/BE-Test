@@ -6,10 +6,6 @@ const request = require("supertest")
 jest.setTimeout(15000);
 
 describe('test simple route hello', () => {
-    afterEach((done) => {
-      app.close();
-      done();
-    });
     test('should return a output from the endpoint', async () => {
         const expected_response = {
             message: 'Hello'
