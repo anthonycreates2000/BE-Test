@@ -52,7 +52,7 @@ jobs:
       - name: Execute PostgreSQL command files.
         run: | 
           cd /tmp
-          sudo -u postgres psql /files/survey.sql
+          psql -U postgres -d ntx_db -h localhost -a -f /files/survey.sql
 
       - name: install production dependencies
         run: npm install --omit=dev
