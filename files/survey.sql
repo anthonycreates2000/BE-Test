@@ -56,7 +56,7 @@ INSERT INTO public.surveys ("values","createdAt","updatedAt","userId") VALUES
 	 ('{80,80,80,80,80}','2022-12-22 21:05:32.317+07','2022-12-22 21:05:32.317+07',3);
 
 -- Membuat tabel untuk menampung data-data live threat.
-CREATE TABLE livethreat (
+CREATE TABLE public.livethreat (
 	"id" serial4 NOT NULL,
 	"sourceCountry" varchar(100) NULL, 
 	"destinationCountry" varchar(100) NULL, 
