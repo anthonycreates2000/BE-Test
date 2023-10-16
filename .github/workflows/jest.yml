@@ -44,7 +44,8 @@ jobs:
         run: sudo service postgresql start
 
       - name: Configure PostgreSQL
-        run: | 
+        run: |
+          cd /tmp
           sudo -u postgres psql -c "CREATE DATABASE ntx_db;"
           sudo -u postgres psql -c "CREATE USER postgres WITH PASSWORD 'admin';"
           sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE ntx_db TO postgres;"
