@@ -96,13 +96,12 @@ exports.refactoreMe2 = async (req, res) => {
 exports.callmeWebSocket = async (req, res) => {
   // do something
   try {
-    const live_threat_response = await redis.get(LIVE_THREAT_MAP_URL);
     const web_socket_server = await new WebSocket.Server({ noServer: true });
-    const live_threat_response_data = live_threat_response.data;
-
+    const live_threat = await getLivethreatDataFromAPI();
+    
     web_socket_server.clients.forEach((client) => {
       if (client.readyState === WebSocket.OPEN) {
-        client.send(JSON.stringify(live_threat_response_data));
+        client.send(JSON.stringify(live_threat));
       }
     });
   } catch (error) {
