@@ -6,8 +6,6 @@ const sinon = require("sinon");
 const Redis = require("ioredis");
 const redis = new Redis();
 
-const request = require("supertest");
-
 COUNT_DESTINATION_COUNTRY = "count_destination_country";
 COUNT_SOURCE_COUNTRY = "count_source_country";
 
