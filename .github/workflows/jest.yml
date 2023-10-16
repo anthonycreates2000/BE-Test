@@ -44,7 +44,9 @@ jobs:
         run: sudo service postgresql start
 
       - name: Execute PostgreSQL command files.
-        run: psql -a -f files/survey.sql
+        run: | 
+          sudo -u postgres psql -d ntx_db -U postgres
+          psql -a -f files/survey.sql
 
       - name: install production dependencies
         run: npm install --omit=dev
