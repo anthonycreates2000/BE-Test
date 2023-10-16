@@ -79,7 +79,6 @@ exports.refactoreMe2 = async (req, res) => {
       SET dosurvey = True
       WHERE id = ${req.body.id}
     `);
-    console.log(updateData);
   }
   catch(error){
     console.log(error);
@@ -168,9 +167,10 @@ const getLivethreatRedisCache = async () => {
     LIVE_THREAT_COUNT_DATA_KEY
   );
 
-  if (livethreat_count_cached_data === undefined || livethreat_count_cached_data === null) {
+  if (livethreat_count_cached_data) {
     console.log("Loading live threat count data from redis cache...");
     const attack_count_data = JSON.parse(livethreat_count_cached_data);
+    console.log(`Attack count data: ${attack_count_data}`)
     return attack_count_data;
   }
   return null;

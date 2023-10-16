@@ -37,6 +37,8 @@ describe('test rute get livethreat attacks', () => {
 
       const response_data = response.data;
 
+      console.log(`Response data: ${response_data}`);
+
       assert.deepEqual(response_data.label, [
         "court_destination_country",
         "court_source_country",
