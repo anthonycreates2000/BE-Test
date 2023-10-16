@@ -25,10 +25,8 @@ describe('test simple route hello', () => {
             .get("/")
             .expect(200)
 
-        expect(response.body).toEqual(expected_response);
-    });
-
-    
+        expect(response.body).equal(expected_response);
+    }); 
 });
 
 describe('test rute get livethreat attacks', () => {
@@ -47,4 +45,8 @@ describe('test rute get livethreat attacks', () => {
       should.ok(Number.isSafeInteger(response_data.total[0]));
       should.ok(Number.isSafeInteger(response_data.total[1]));
     });
-})
+});
+
+describe('tes rute refactorMe1', () => {
+
+});
