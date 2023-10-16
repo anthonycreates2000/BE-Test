@@ -15,7 +15,7 @@ env:
 jobs: 
   test:
     runs-on: ubuntu-latest
-
+    
     steps:
       - uses: actions/checkout@v2
       - name: Node.js setup
@@ -62,7 +62,7 @@ jobs:
       - name: Execute PostgreSQL command files.
         run: | 
           cd /tmp
-          psql -U postgres -d ntx_db < /files/survey.sql
+          psql -U postgres -d ntx_db < survey.sql
 
       - name: install production dependencies
         run: npm install --omit=dev
