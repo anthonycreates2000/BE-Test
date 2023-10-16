@@ -29,3 +29,6 @@
 6. Buatkan unit test untuk mentest si endpoint berjalan dengan baik.
 
 7. Push hasil test ini di github mu
+
+Catatan: Untuk melakukan push hasil tes, saya menggunakan github actions. Source code github actions dapat dilihat pada .github/workflows/jest.yml.
+
