@@ -17,10 +17,5 @@ describe('test simple route hello', () => {
 
         expect(response.body).toEqual(expected_response);
     })
-
-    test('', async () => {
-        getThreatCountDataFromDatabase;
-        expect(response.body).toEqual(expected_response);
-    })
 })
 
