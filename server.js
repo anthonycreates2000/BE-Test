@@ -21,7 +21,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // database
 const db = require("./app/models");
-const { callmeWebSocket, getData } = require("./app/controllers/exampleController");
+const { callmeWebSocket, getData, refactoreMe1 } = require("./app/controllers/exampleController");
 
 db.sequelize.sync();
 
@@ -51,6 +51,9 @@ app.get("/get_livethreat_attacks", async (req, res) => {
   await getData(req, res);
 })
 
+app.get("/get_average_per_survey", async (req, res) => {
+  await refactoreMe1(req, res);
+})
 
 // Contoh penggunaan middleware autentikasi pada aplikasi.
 app.get(
