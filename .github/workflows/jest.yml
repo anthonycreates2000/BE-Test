@@ -10,6 +10,7 @@ env:
   HOST: "localhost"
   USER: "postgres"
   DB: "ntx_db"
+  PASSWORD: ""
   PORT: 8000
 
 jobs: 
