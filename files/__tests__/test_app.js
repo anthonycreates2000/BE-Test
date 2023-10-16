@@ -60,6 +60,5 @@ describe('authenticateWithJWT', () => {
         authenticatewithJWT(req, res, () => {});
         sinon.restore();
     });
-    it('Memberikan error pada ')
 })
 
