@@ -16,9 +16,7 @@ module.exports = (app) => {
     router.get(
       "/get_livethreat_attacks_authorized",
       authMiddleware.authenticatewithJWT,
-      async (req, res) => {
-        await getData(req, res);
-      }
+      exampleController.getData
     );
 
     // Contoh penggunaan middleware pengecekan autentikasi, lalu cek role user pada aplikasi.
@@ -26,9 +24,7 @@ module.exports = (app) => {
       "/get_livethreat_attacks_admin",
       authMiddleware.authenticatewithJWT,
       roleMiddleware.checkUserRole("admin"),
-      async (req, res) => {
-        await getData(req, res);
-      }
+      exampleController.getData
     );
 
     app.use("/api/authentication", router);
