@@ -127,8 +127,8 @@ const getData = async (req, res) => {
       data: {
         label: [COUNT_DESTINATION_COUNTRY, COUNT_SOURCE_COUNTRY],
         total: [
-          parseInt(attack_count_data[COUNT_DESTINATION_COUNTRY]),
-          parseInt(attack_count_data[COUNT_SOURCE_COUNTRY]),
+          parseInt(cached_attack_count_data[COUNT_DESTINATION_COUNTRY]),
+          parseInt(cached_attack_count_data[COUNT_SOURCE_COUNTRY]),
         ],
       },
     });
