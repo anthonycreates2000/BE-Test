@@ -32,7 +32,7 @@ describe('test simple route hello', () => {
 describe('test rute get livethreat attacks', () => {
     test("mendapatkan data livethreat attacks", async () => {
       const response = await request(app)
-        .get("get_livethreat_attacks")
+        .get("/get_livethreat_attacks")
         .expect(201);
 
       const response_data = response.data;
