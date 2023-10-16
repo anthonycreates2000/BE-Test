@@ -28,15 +28,14 @@ jobs:
             ${{ runner.os }}-
 
       # Melakukan pengunduhan semua dependency yang diperlukan.
+      - name: Install redis
+        run: sudo apt-get install -y redis-tools redis-server
+
       - name: install production dependencies
         run: npm install --omit=dev
 
       - name: install development dependencies
         run: npm install --save-dev
-
-      - name: Install redis
-        run: sudo apt-get install -y redis-tools redis-server
-
       # Menjalankan unit testing.
       - name: Run test
         run: npm run test
