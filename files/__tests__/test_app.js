@@ -2,8 +2,8 @@ const axios = require('axios');
 const { getData } = require("../../app/controllers/exampleController");
 const app = require("../../server.js");
 const request = require("supertest");
-const { authenticatewithJWT } = require("../../app/middleware/authMiddleware");
-const { checkUserRole } = require("../../app/middleware/roleMiddleware");
+const authenticatewithJWT = require("../../app/middleware/authMiddleware");
+const checkUserRole = require("../../app/middleware/roleMiddleware");
 
 jest.setTimeout(15000);
 
@@ -39,5 +39,8 @@ describe('authenticateWithJWT', () => {
 
       authenticatewithJWT(req, res, () => {});
     });
+    it("Memberikan error 401 apabila token yang diberikan tidak sesuai.", () => {
+
+    })
 })
 
