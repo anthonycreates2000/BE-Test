@@ -41,4 +41,4 @@ jobs:
         run: npm install --save-dev
       # Menjalankan unit testing.
       - name: Run test
-        run: npm run test
+        run: npm run test --forceExit
