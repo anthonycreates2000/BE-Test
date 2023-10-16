@@ -40,8 +40,11 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y postgresql
 
+      - name: Run postgresql
+        run: sudo service postgresql start
+
       - name: Execute PostgreSQL command files.
-        run: psql -f files/survey.sql
+        run: psql -a -f files/survey.sql
 
       - name: install production dependencies
         run: npm install --omit=dev
