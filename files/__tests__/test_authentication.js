@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const authenticatewithJWT = require("../../app/middleware/authMiddleware");
 const checkUserRole = require("../../app/middleware/roleMiddleware");
+const generateToken = require("../../app/middleware/tokenMiddleware");
 const chai = require("chai");
 const sinon = require("sinon");
 const assert = chai.assert;
@@ -42,7 +43,23 @@ describe("authenticateWithJWT", () => {
     authenticatewithJWT(req, res, () => {});
     sinon.restore();
   });
-  
+  it('Lanjut ke middleware berikutnya/ routing apabila header token sudah sesuai.', () => {
+    const user = { id: 1, username: "testuser" };
+    const req = {
+      header: () => generateToken(user),
+    };
+    const res = {};
+    const next = sinon.spy();
+
+    sinon.stub(jwt, "verify").returns(user);
+
+    authenticatewithJWT(req, res, next);
+
+    assert.equal(req.user, user);
+    assert.isTrue(next.calledOnce);
+
+    sinon.restore();
+  })
 });
 
 describe("checkUserRole", () => {
@@ -67,6 +84,7 @@ describe("checkUserRole", () => {
     checkUserRole(requiredRole)(req, res, next);
     assert.isFalse(next.called);
   });
+
   it("Lanjut ke middleware berikutnya/ kode utama apabila role user yang diberikan sesuai.", () => {
     const req = {
       user: { role: "admin" },
