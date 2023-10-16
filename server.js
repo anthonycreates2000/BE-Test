@@ -37,46 +37,27 @@ app.get("/", (req, res) => {
   res.json({ message: "Hello" });
 });
 
-app.get("/websocket", (req, res) => {
-  function convert_minutes_to_miliseconds(minutes){
-      return minutes * 60 * 1000
-  }
-  setInterval(
-    callmeWebSocket,
-    convert_minutes_to_miliseconds(minutes = 3)
-  );
-})
+// app.get("/websocket", (req, res) => {
+//   function convert_minutes_to_miliseconds(minutes){
+//       return minutes * 60 * 1000
+//   }
+//   setInterval(
+//     callmeWebSocket,
+//     convert_minutes_to_miliseconds(minutes = 3)
+//   );
+// })
 
-app.get("/get_livethreat_attacks", async (req, res) => {
-  await getData(req, res);
-})
+// app.get("/get_livethreat_attacks", async (req, res) => {
+//   await getData(req, res);
+// })
 
-app.get("/get_average_per_survey", async (req, res) => {
-  await refactoreMe1(req, res);
-})
-
-// Contoh penggunaan middleware autentikasi pada aplikasi.
-app.get(
-  "/get_livethreat_attacks_authorized",
-  authenticatewithJWT,
-  async (req, res) => {
-    await getData(req, res);
-  }
-);
-
-// Contoh penggunaan middleware pengecekan autentikasi, lalu cek role user pada aplikasi.
-app.get(
-  "/get_livethreat_attacks_admin",
-  authenticatewithJWT,
-  checkUserRole("admin"),
-  async (req, res) => {
-    await getData(req, res);
-  }
-);
-
+// app.get("/get_average_per_survey", async (req, res) => {
+//   await refactoreMe1(req, res);
+// })
 
 // routes
-// require("./app/routes/exaole.routes")(app);
+require("./app/routes/dataRoutes")(app);
+require("./app/routes/authenticationRoutes")(app);
 
 // set port, listen for requests
 const PORT = process.env.PORT || 7878;
