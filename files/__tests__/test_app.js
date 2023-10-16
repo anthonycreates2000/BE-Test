@@ -63,3 +63,26 @@ describe('authenticateWithJWT', () => {
     });
 })
 
+describe("checkUserRole", () => {
+    it("Memberikan error 403 apabila role user tidak sesuai.", () => {
+      const req = {
+        user: { role: "user" },
+      };
+      const res = {
+        status: (statusCode) => ({
+          json: (data) => {
+            assert.equal(statusCode, 403);
+            assert.deepEqual(data, {
+              message:
+                "You do not have the required role to access this endpoint.",
+            });
+          },
+        }),
+      };
+      const next = sinon.spy();
+
+      const requiredRole = "admin";
+      checkUserRole(requiredRole)(req, res, next);
+      assert.isFalse(next.called);
+    });
+})
