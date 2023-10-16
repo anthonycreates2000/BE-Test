@@ -76,7 +76,7 @@ exports.refactoreMe2 = async (req, res) => {
   try{
     const updateData = await db.sequelize.query(`
       UPDATE "surveys"
-      SET dosurvey = False
+      SET dosurvey = True
       WHERE id = ${req.body.id}
     `);
     console.log(updateData);
@@ -95,7 +95,6 @@ exports.refactoreMe2 = async (req, res) => {
 
 exports.callmeWebSocket = async (req, res) => {
   // do something
-  // Check if the data is cached in Redis
   try {
     const live_threat_response = await redis.get(LIVE_THREAT_MAP_URL);
     const web_socket_server = await new WebSocket.Server({ noServer: true });
