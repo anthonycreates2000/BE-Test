@@ -52,7 +52,6 @@ describe("Tes fungsi getData", () => {
       expect(result).to.be.null;
 
       // Setelah mengecek apabila data tersebut kosong, maka saya akan mencoba untuk running kembali.
-      // .
       const live_threat_queries = await getLivethreatDataFromAPI();
       await save_livethreat_to_redis(live_threat_queries);
 
