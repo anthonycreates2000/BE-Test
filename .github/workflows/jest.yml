@@ -53,7 +53,7 @@ jobs:
         run: | 
           cd /tmp
           psql -U postgres -d ntx_db -h localhost -a -f /files/survey.sql
-         env:
+        env:
           PGPASSFILE: admin
       - name: install production dependencies
         run: npm install --omit=dev
