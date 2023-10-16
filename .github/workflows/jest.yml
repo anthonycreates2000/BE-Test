@@ -1,0 +1,39 @@
+# Github akan menjalankan tes secara otomatis 
+# apabila melakukan push sesuatu ke repository.
+# Kemudian, hasil tes akan otomatis dapat dilihat pada github, karena 
+# saya menggunakan github actions.
+name: Jest
+on: push
+jobs: 
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Node.js setup
+        uses: actions/setup-node@v1
+        with:
+          node-version: "14"
+
+      # Meningkatkan kecepatan dengan caching.
+      - name: Cache node modules
+        uses: actions/cache@v2
+        env: 
+          cache-name: cache-node
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
+      # Melakukan pengunduhan semua dependency yang diperlukan.
+      - name: install production dependencies
+        run: npm install --omit=dev
+
+      - name: install development dependencies
+        run: npm install --save-dev
+      
+      # Menjalankan unit testing.
+      - name: Run test
+        run: npm run test
