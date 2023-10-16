@@ -125,10 +125,10 @@ const getData = async (req, res) => {
       statusCode: 201,
       success: true,
       data: {
-        label: [court_destination_country, court_source_country],
+        label: [COUNT_DESTINATION_COUNTRY, COUNT_SOURCE_COUNTRY],
         total: [
-          parseInt(attack_count_data[court_destination_country]),
-          parseInt(attack_count_data[court_source_country]),
+          parseInt(attack_count_data[COUNT_DESTINATION_COUNTRY]),
+          parseInt(attack_count_data[COUNT_SOURCE_COUNTRY]),
         ],
       },
     });
