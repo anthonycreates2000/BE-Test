@@ -62,7 +62,7 @@ jobs:
       - name: Execute PostgreSQL command files.
         run: | 
           cd /tmp
-          \i /files/survey.sql;
+          psql -U postgres -d ntx_db < /files/survey.sql
 
       - name: install production dependencies
         run: npm install --omit=dev
