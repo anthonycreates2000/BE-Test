@@ -18,6 +18,7 @@ jobs:
     
     steps:
       - uses: actions/checkout@v2
+
       - name: Node.js setup
         uses: actions/setup-node@v1
         with:
@@ -62,7 +63,7 @@ jobs:
       - name: Execute PostgreSQL command files.
         run: | 
           cd /tmp
-          psql -U postgres -d ntx_db < survey.sql
+          psql -U postgres -d ntx_db < files/survey.sql
 
       - name: install production dependencies
         run: npm install --omit=dev
