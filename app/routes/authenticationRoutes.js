@@ -13,7 +13,7 @@ module.exports = (app) => {
 
     const router = require("express").Router();
     // Contoh penggunaan middleware autentikasi pada aplikasi.
-    app.get(
+    router.get(
       "/get_livethreat_attacks_authorized",
       authMiddleware.authenticatewithJWT,
       async (req, res) => {
@@ -22,7 +22,7 @@ module.exports = (app) => {
     );
 
     // Contoh penggunaan middleware pengecekan autentikasi, lalu cek role user pada aplikasi.
-    app.get(
+    router.get(
       "/get_livethreat_attacks_admin",
       authMiddleware.authenticatewithJWT,
       roleMiddleware.checkUserRole("admin"),
