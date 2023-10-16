@@ -12,48 +12,9 @@ const LIVE_THREAT_MAP_URL = "https://livethreatmap.radware.com/api/map/attacks?l
 exports.refactoreMe1 = (req, res) => {
   // function ini sebenarnya adalah hasil survey dri beberapa pertnayaan, yang mana nilai dri jawaban tsb akan di store pada array seperti yang ada di dataset
 
-  // CODE VERSI CHATGPT.
-  // db.sequelize
-  //   .query(
-  //     `
-  //       SELECT
-  //         (SUM(values[1]::numeric) / 10) AS avg_index1,
-  //         (SUM(values[2]::numeric) / 10) AS avg_index2,
-  //         (SUM(values[3]::numeric) / 10) AS avg_index3,
-  //         (SUM(values[4]::numeric) / 10) AS avg_index4,
-  //         (SUM(values[5]::numeric) / 10) AS avg_index5,
-  //         (SUM(values[6]::numeric) / 10) AS avg_index6,
-  //         (SUM(values[7]::numeric) / 10) AS avg_index7,
-  //         (SUM(values[8]::numeric) / 10) AS avg_index8,
-  //         (SUM(values[9]::numeric) / 10) AS avg_index9,
-  //         (SUM(values[10]::numeric) / 10) AS avg_index10
-  //       FROM "surveys"
-  //     `
-  //   )
-  //   .then((data) => {
-  //     const totalIndex = [
-  //       data[0][0].avg_index1,
-  //       data[0][0].avg_index2,
-  //       data[0][0].avg_index3,
-  //       data[0][0].avg_index4,
-  //       data[0][0].avg_index5,
-  //       data[0][0].avg_index6,
-  //       data[0][0].avg_index7,
-  //       data[0][0].avg_index8,
-  //       data[0][0].avg_index9,
-  //       data[0][0].avg_index10,
-  //     ];
-  //     res.status(200).send({
-  //       statusCode: 200,
-  //       success: true,
-  //       data: totalIndex,
-  //     });
-  //   });
-
-  // CODE VERSI SAYA.
-  TOTAL_NUMBER_OF_QUESTIONS = 10
+  TOTAL_NUMBER_OF_QUESTIONS = 10;
   // Pada code di bawah, terdapat query native PostgreSQL yang bertujuan untuk
-  // melakukan pe.
+  // melakukan rata-rata dari masing-masing nomor survey.
   db.sequelize
     .query(
       `
@@ -96,9 +57,6 @@ exports.refactoreMe2 = async (req, res) => {
   // function ini untuk menjalakan query sql insert dan mengupdate field "dosurvey" yang ada di table user menjadi true,
   // jika melihat data yang di berikan, salah satu usernnya memiliki dosurvey dengan data false.
 
-  console.log(req.body.userId)
-  console.log(req.body.values)
-
   // Melakukan insert data ke table survey, dengan updatedAt dan createdAt pada hari ini.
   try {
     await db.sequelize.query(`
@@ -120,11 +78,11 @@ exports.refactoreMe2 = async (req, res) => {
       UPDATE "surveys"
       SET dosurvey = False
       WHERE id = ${req.body.id}
-    `)
-    console.log(updateData)
+    `);
+    console.log(updateData);
   }
   catch(error){
-    console.log(error)
+    console.log(error);
   }
 
   res.status(201).send({
@@ -133,41 +91,6 @@ exports.refactoreMe2 = async (req, res) => {
     success: true,
     updateData,
   });
-
-  
-  // Survey.create({
-  //   userId: req.body.userId,
-  //   values: req.body.values, // [] kirim array
-  // })
-  //   .then((data) => {
-  //     User.update(
-  //       {
-  //         dosurvey: true,
-  //       },
-  //       {
-  //         where: { id: req.body.id },
-  //       }
-  //     )
-  //       .then(() => {
-  //         console.log("success");
-  //       })
-  //       .catch((err) => console.log(err));
-
-  //     res.status(201).send({
-  //       statusCode: 201,
-  //       message: "Survey sent successfully!",
-  //       success: true,
-  //       data,
-  //     });
-  //   })
-  //   .catch((err) => {
-  //     console.log(err);
-  //     res.status(500).send({
-  //       statusCode: 500,
-  //       message: "Cannot post survey.",
-  //       success: false,
-  //     });
-  //   });
 };
 
 exports.callmeWebSocket = async (req, res) => {
