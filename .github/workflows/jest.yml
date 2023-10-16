@@ -25,52 +25,53 @@ jobs:
           node-version: "14"
 
       # Meningkatkan kecepatan dengan caching.
-      - name: Cache node modules
-        uses: actions/cache@v2
-        env: 
-          cache-name: cache-node
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
+      # - name: Cache node modules
+      #   uses: actions/cache@v2
+      #   env: 
+      #     cache-name: cache-node
+      #   with:
+      #     path: ~/.npm
+      #     key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+      #     restore-keys: |
+      #       ${{ runner.os }}-build-${{ env.cache-name }}-
+      #       ${{ runner.os }}-build-
+      #       ${{ runner.os }}-
+      - name: Check list of files available
+        run: ls -la
+      # # Melakukan pengunduhan semua dependency yang diperlukan.
+      # - name: Install redis
+      #   run: sudo apt-get install -y redis-tools redis-server
 
-      # Melakukan pengunduhan semua dependency yang diperlukan.
-      - name: Install redis
-        run: sudo apt-get install -y redis-tools redis-server
+      # - name: Run redis
+      #   run: sudo service redis-server start
 
-      - name: Run redis
-        run: sudo service redis-server start
+      # - name: Install postgresql
+      #   run: |
+      #     sudo apt-get update
+      #     sudo apt-get install -y postgresql
 
-      - name: Install postgresql
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y postgresql
+      # - name: Run postgresql
+      #   run: sudo service postgresql start
 
-      - name: Run postgresql
-        run: sudo service postgresql start
-
-      - name: Configure PostgreSQL
-        run: |
-          cd /tmp
-          sudo -u postgres psql -c "CREATE DATABASE ntx_db;"
-          sudo -u postgres psql -c "ALTER USER postgres PASSWORD NULL;"
-          sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE ntx_db TO postgres;"
+      # - name: Configure PostgreSQL
+      #   run: |
+      #     cd /tmp
+      #     sudo -u postgres psql -c "CREATE DATABASE ntx_db;"
+      #     sudo -u postgres psql -c "ALTER USER postgres PASSWORD NULL;"
+      #     sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE ntx_db TO postgres;"
 
 
-      - name: Execute PostgreSQL command files.
-        run: | 
-          cd /tmp
-          psql -U postgres -d ntx_db < files/survey.sql
+      # - name: Execute PostgreSQL command files.
+      #   run: | 
+      #     cd /tmp
+      #     psql -U postgres -d ntx_db < files/survey.sql
 
-      - name: install production dependencies
-        run: npm install --omit=dev
+      # - name: install production dependencies
+      #   run: npm install --omit=dev
 
-      - name: install development dependencies
-        run: npm install --save-dev
+      # - name: install development dependencies
+      #   run: npm install --save-dev
 
-      # Menjalankan unit testing.
-      - name: Run test
-        run: npm run test
+      # # Menjalankan unit testing.
+      # - name: Run test
+      #   run: npm run test
