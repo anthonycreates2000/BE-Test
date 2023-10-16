@@ -7,6 +7,7 @@ on: push
 jobs: 
   test:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v2
       - name: Node.js setup
@@ -33,6 +34,14 @@ jobs:
 
       - name: Run redis
         run: sudo service redis-server start
+
+      - name: Install postgresql
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql
+
+      - name: Execute PostgreSQL command files.
+        run: psql -U myuser -d mydatabase -a -f files/survey.sql
 
       - name: install production dependencies
         run: npm install --omit=dev
