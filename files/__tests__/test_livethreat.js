@@ -59,7 +59,7 @@ describe("Tes fungsi getData", () => {
       // Setelah mengecek apabila data tersebut kosong, maka saya akan mencoba untuk running kembali.
       // .
       const live_threat_queries = await getLivethreatDataFromAPI();
-      save_livethreat_to_redis(live_threat_queries);
+      await save_livethreat_to_redis(live_threat_queries);
 
       result = await getLivethreatRedisCache(
         COUNT_DESTINATION_COUNTRY,
