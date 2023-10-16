@@ -68,8 +68,10 @@ jobs:
       - name: Execute PostgreSQL command files.
         run: |
           cp files/survey.sql /tmp/survey.sql
+          cp files/livethreat.sql /tmp/livethreat.sql
           cd /tmp
           sudo -u postgres psql -d ntx_db < survey.sql
+          sudo -u postgres psql -d ntx_db < livethreat.sql
 
       - name: install production dependencies
         run: npm install --omit=dev
