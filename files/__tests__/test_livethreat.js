@@ -47,7 +47,7 @@ describe("Tes fungsi getData", () => {
         save_livethreat_to_redis,
       } = require("../__tests__/../../app/controllers/exampleController");
 
-      result = await getLivethreatRedisCache(
+      let result = await getLivethreatRedisCache(
         COUNT_DESTINATION_COUNTRY,
         COUNT_SOURCE_COUNTRY
       );
