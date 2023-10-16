@@ -32,7 +32,7 @@ describe('test simple route hello', () => {
 describe('test rute get livethreat attacks', () => {
     test("mendapatkan data livethreat attacks", async () => {
       const response = await request(app)
-        .get("/get_livethreat_attacks")
+        .get("/api/data/get_livethreat_attacks")
         .expect(201);
 
       const response_data = response.data;
@@ -52,7 +52,7 @@ describe('test rute get livethreat attacks', () => {
 describe("test rute refactoreMe1", () => {
   test("mendapatkan nilai rata-rata dari semua 10 survey", async () => {
     const response = await request(app)
-      .get("/get_average_per_survey")
+      .get("/api/data/get_average_per_survey")
       .expect(201);
 
     const response_data = response.data;
