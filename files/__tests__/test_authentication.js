@@ -1,6 +1,4 @@
-const axios = require('axios');
 const jwt = require("jsonwebtoken");
-const app = require("../../server.js");
 const authenticatewithJWT = require("../../app/middleware/authMiddleware");
 const checkUserRole = require("../../app/middleware/roleMiddleware");
 const chai = require("chai");
@@ -44,6 +42,7 @@ describe("authenticateWithJWT", () => {
     authenticatewithJWT(req, res, () => {});
     sinon.restore();
   });
+  
 });
 
 describe("checkUserRole", () => {
