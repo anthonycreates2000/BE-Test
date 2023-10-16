@@ -1,6 +1,6 @@
 const exampleController = require("../controllers/exampleController");
-const authMiddleware = require("../middleware/authMiddleware")
-const roleMiddleware = require("../middleware/roleMiddleware")
+const authenticatewithJWT = require("../middleware/authMiddleware");
+const checkUserRole = require("../middleware/roleMiddleware");
 
 module.exports = (app) => {
     app.use((req, res, next) => {
@@ -15,15 +15,15 @@ module.exports = (app) => {
     // Contoh penggunaan middleware autentikasi pada aplikasi.
     router.get(
       "/get_livethreat_attacks_authorized",
-      authMiddleware.authenticatewithJWT,
+      authenticatewithJWT,
       exampleController.getData
     );
 
     // Contoh penggunaan middleware pengecekan autentikasi, lalu cek role user pada aplikasi.
     router.get(
       "/get_livethreat_attacks_admin",
-      authMiddleware.authenticatewithJWT,
-      roleMiddleware.checkUserRole("admin"),
+      authenticatewithJWT,
+      checkUserRole("admin"),
       exampleController.getData
     );
 
