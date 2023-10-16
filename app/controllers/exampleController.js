@@ -168,7 +168,7 @@ const getLivethreatRedisCache = async () => {
     LIVE_THREAT_COUNT_DATA_KEY
   );
 
-  if (livethreat_count_cached_data) {
+  if (livethreat_count_cached_data === undefined || livethreat_count_cached_data === null) {
     console.log("Loading live threat count data from redis cache...");
     const attack_count_data = JSON.parse(livethreat_count_cached_data);
     return attack_count_data;
