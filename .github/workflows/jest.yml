@@ -60,7 +60,7 @@ jobs:
 
       - name: Execute PostgreSQL command files.
         run: | 
-          PGPASSWORD=NULL psql -U postgres -d ntx_db -h localhost -a -f /files/survey.sql
+          psql -U postgres -d ntx_db -h localhost -a -f /files/survey.sql
 
       - name: install production dependencies
         run: npm install --omit=dev
