@@ -98,7 +98,7 @@ exports.callmeWebSocket = async (req, res) => {
   try {
     const web_socket_server = await new WebSocket.Server({ noServer: true });
     const live_threat = await getLivethreatDataFromAPI();
-    
+
     web_socket_server.clients.forEach((client) => {
       if (client.readyState === WebSocket.OPEN) {
         client.send(JSON.stringify(live_threat));
@@ -106,6 +106,60 @@ exports.callmeWebSocket = async (req, res) => {
     });
   } catch (error) {
     console.error(`Error fecthing data from live threat map: ${error}`);
+  }
+};
+
+const getData = async (req, res) => {
+  // do something
+
+  COUNT_DESTINATION_COUNTRY = "count_destination_country";
+  COUNT_SOURCE_COUNTRY = "count_source_country";
+
+  const cached_attack_count_data = await getLivethreatRedisCache(
+    COUNT_DESTINATION_COUNTRY,
+    COUNT_SOURCE_COUNTRY
+  );
+
+  if (cached_attack_count_data) {
+    res.status(201).send({
+      statusCode: 201,
+      success: true,
+      data: {
+        label: [court_destination_country, court_source_country],
+        total: [
+          parseInt(attack_count_data[court_destination_country]),
+          parseInt(attack_count_data[court_source_country]),
+        ],
+      },
+    });
+  }
+
+  let live_threat_queries = await getLivethreatDataQuery();
+  await insertLivethreatDataToDatabase(live_threat_queries);
+
+  try {
+    const attack_count_data = await getThreatCountDataFromDatabase(
+      COUNT_DESTINATION_COUNTRY,
+      COUNT_SOURCE_COUNTRY
+    );
+
+    await save_livethreat_to_redis(attack_count_data);
+
+    res.status(201).send({
+      statusCode: 201,
+      success: true,
+      data: {
+        label: [COUNT_DESTINATION_COUNTRY, COUNT_SOURCE_COUNTRY],
+        total: [
+          parseInt(attack_count_data[COUNT_DESTINATION_COUNTRY]),
+          parseInt(attack_count_data[COUNT_SOURCE_COUNTRY]),
+        ],
+      },
+    });
+  } catch (error) {
+    console.error(
+      `Error fetching data destination and source country count data: ${error}`
+    );
   }
 };
 
@@ -197,60 +251,6 @@ const getThreatCountDataFromDatabase = async (court_destination_country, court_s
 const save_livethreat_to_redis = async (attack_count_data) => {
   // Kode di bawah menunjukkan bahwa redis akan menyimpan data selama 15 menit.
   await redis.set(LIVE_THREAT_COUNT_DATA_KEY, JSON.stringify(attack_count_data), "EX", 900);
-}
-
-const getData = async (req, res) => {
-  // do something
-
-  COUNT_DESTINATION_COUNTRY = "count_destination_country";
-  COUNT_SOURCE_COUNTRY = "count_source_country";
-
-  const cached_attack_count_data = await getLivethreatRedisCache(
-    COUNT_DESTINATION_COUNTRY,
-    COUNT_SOURCE_COUNTRY
-  );
-
-  if (cached_attack_count_data) {
-    res.status(201).send({
-      statusCode: 201,
-      success: true,
-      data: {
-        label: [court_destination_country, court_source_country],
-        total: [
-          parseInt(attack_count_data[court_destination_country]),
-          parseInt(attack_count_data[court_source_country]),
-        ],
-      },
-    });
-  }
-
-  let live_threat_queries = await getLivethreatDataQuery();
-  await insertLivethreatDataToDatabase(live_threat_queries);
-
-  try {
-    const attack_count_data = await getThreatCountDataFromDatabase(
-      COUNT_DESTINATION_COUNTRY,
-      COUNT_SOURCE_COUNTRY
-    );
-
-    await save_livethreat_to_redis(attack_count_data);
-
-    res.status(201).send({
-      statusCode: 201,
-      success: true,
-      data: {
-        label: [COUNT_DESTINATION_COUNTRY, COUNT_SOURCE_COUNTRY],
-        total: [
-          parseInt(attack_count_data[COUNT_DESTINATION_COUNTRY]),
-          parseInt(attack_count_data[COUNT_SOURCE_COUNTRY]),
-        ],
-      },
-    });
-  } catch (error) {
-    console.error(
-      `Error fetching data destination and source country count data: ${error}`
-    );
-  }
 }
 
 exports.getData = getData;
