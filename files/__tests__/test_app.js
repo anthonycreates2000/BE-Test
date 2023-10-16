@@ -5,6 +5,7 @@ const request = require("supertest");
 const authenticatewithJWT = require("../../app/middleware/authMiddleware");
 const checkUserRole = require("../../app/middleware/roleMiddleware");
 const chai = require("chai");
+const sinon = require("sinon");
 const assert = chai.assert;
 
 jest.setTimeout(15000);
@@ -58,6 +59,7 @@ describe('authenticateWithJWT', () => {
         sinon.stub(jwt, "verify").throws(new Error("Invalid token"));
         authenticatewithJWT(req, res, () => {});
         sinon.restore();
-    })
+    });
+    it('Memberikan error pada ')
 })
 
