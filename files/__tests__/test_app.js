@@ -42,7 +42,22 @@ describe('authenticateWithJWT', () => {
       authenticatewithJWT(req, res, () => {});
     });
     it("Memberikan error 401 apabila token yang diberikan tidak sesuai.", () => {
-
+        const req = {
+          header: () => "invalidToken",
+        };
+        const res = {
+          status: (statusCode) => ({
+            json: (data) => {
+              assert.equal(statusCode, 401);
+              assert.deepEqual(data, { 
+                message: "Invalid token." });
+            },
+          }),
+        };
+        
+        sinon.stub(jwt, "verify").throws(new Error("Invalid token"));
+        authenticatewithJWT(req, res, () => {});
+        sinon.restore();
     })
 })
 
