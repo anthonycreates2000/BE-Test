@@ -9,7 +9,6 @@ on: push
 env:
   HOST: "localhost"
   USER: "postgres"
-  PASSWORD: "admin"
   DB: "ntx_db"
   PORT: 8000
 
@@ -56,13 +55,13 @@ jobs:
         run: |
           cd /tmp
           sudo -u postgres psql -c "CREATE DATABASE ntx_db;"
-          sudo -u postgres psql -c "ALTER USER postgres WITH PASSWORD 'admin';"
+          sudo -u postgres psql -c "ALTER USER postgres PASSWORD NULL;"
           sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE ntx_db TO postgres;"
 
       - name: Execute PostgreSQL command files.
         run: | 
           cd /tmp
-          psql -U postgres -d ntx_db -h localhost -p admin -a -f /files/survey.sql
+          psql -U postgres -d ntx_db -h localhost -a -f /files/survey.sql
 
       - name: install production dependencies
         run: npm install --omit=dev
