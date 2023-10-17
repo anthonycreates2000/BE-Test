@@ -97,7 +97,6 @@ exports.refactoreMe2 = async (req, res) => {
 };
 
 exports.callmeWebSocket = async (req, res) => {
-  // do something
   try {
     const web_socket_server = await new WebSocket.Server({ noServer: true });
     const live_threat = await getLivethreatDataFromAPI();
@@ -113,8 +112,6 @@ exports.callmeWebSocket = async (req, res) => {
 };
 
 const getData = async (req, res) => {
-  // do something
-
   COUNT_DESTINATION_COUNTRY = "count_destination_country";
   COUNT_SOURCE_COUNTRY = "count_source_country";
 
