@@ -1,12 +1,6 @@
-const axios = require('axios');
-const jwt = require("jsonwebtoken");
-const { getData } = require("../../app/controllers/exampleController");
 const app = require("../../server.js");
 const request = require("supertest");
-const authenticatewithJWT = require("../../app/middleware/authMiddleware");
-const checkUserRole = require("../../app/middleware/roleMiddleware");
 const chai = require("chai");
-const sinon = require("sinon");
 const { should } = require('chai');
 const assert = chai.assert;
 
