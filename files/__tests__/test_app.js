@@ -44,14 +44,18 @@ describe('test rute get livethreat attacks', () => {
 
 describe("test rute refactoreMe1", () => {
   test("mendapatkan nilai rata-rata dari semua 10 survey", async () => {
-    const response = await request(app)
+    await request(app)
       .get("/api/data/get_average_per_survey")
-      .expect(200);
+      .expect(200)
+      .then((response) => {
+        const {success, data} = response.body;
+        const response_data = data;
 
-    const response_data = response.data;
+        expect(success).toEqual(true);
 
-    console.log(`Response data: ${response_data}`);
+        console.log(`Response data: ${response_data}`);
 
-    expect(response_data.length).equals(10);
+        expect(response_data.length).toEqual(10);
+      });    
   });
 });
