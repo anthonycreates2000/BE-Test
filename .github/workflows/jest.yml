@@ -10,7 +10,7 @@ env:
   HOST: "localhost"
   USER: "postgres"
   DB: "ntx_db"
-  PASSWORD: ""
+  PASSWORD: "xxxxx"
   PORT: 8000
 
 jobs: 
@@ -38,11 +38,6 @@ jobs:
             ${{ runner.os }}-build-
             ${{ runner.os }}-
 
-      # - name: Check list of files available
-      #   run: |
-      #     ls -la
-      #     cat files/survey.sql
-
       # Melakukan pengunduhan semua dependency yang diperlukan.
       - name: Install redis
         run: sudo apt-get install -y redis-tools redis-server
@@ -62,7 +57,7 @@ jobs:
         run: |
           cd /tmp
           sudo -u postgres psql -c "CREATE DATABASE ntx_db;"
-          sudo -u postgres psql -c "ALTER USER postgres PASSWORD NULL;"
+          sudo -u postgres psql -c "ALTER USER postgres PASSWORD 'xxxxx';"
           sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE ntx_db TO postgres;"
 
       - name: Execute PostgreSQL command files.
