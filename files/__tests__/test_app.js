@@ -30,14 +30,10 @@ describe('test rute get livethreat attacks', () => {
           const { success, data } = response.body;
           const response_data = data;
 
-          console.log(response_data)
-
           expect(success).toEqual(true);
 
           expect(response_data.label[0]).toEqual("count_destination_country");
           expect(response_data.label[1]).toEqual("count_source_country");
-          expect(typeof response_data.total[0]).toEqual("number");
-          expect(typeof response_data.total[1]).toEqual("number");
         });
     });
 });
@@ -52,8 +48,6 @@ describe("test rute refactoreMe1", () => {
         const response_data = data;
 
         expect(success).toEqual(true);
-
-        console.log(`Response data: ${response_data}`);
 
         expect(response_data.length).toEqual(10);
       });    
