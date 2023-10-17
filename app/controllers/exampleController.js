@@ -9,13 +9,14 @@ const LIVE_THREAT_MAP_URL = "https://livethreatmap.radware.com/api/map/attacks?l
 // const Model = db.Model;
 // const { Op } = require("sequelize");
 
-exports.refactoreMe1 = (req, res) => {
+exports.refactoreMe1 = async (req, res) => {
   // function ini sebenarnya adalah hasil survey dri beberapa pertnayaan, yang mana nilai dri jawaban tsb akan di store pada array seperti yang ada di dataset
 
   TOTAL_NUMBER_OF_QUESTIONS = 10;
   // Pada code di bawah, terdapat query native PostgreSQL yang bertujuan untuk
   // melakukan rata-rata dari masing-masing nomor survey.
-  db.sequelize
+  try{
+    const data = await db.sequelize
     .query(
       `
         SELECT
@@ -28,29 +29,31 @@ exports.refactoreMe1 = (req, res) => {
           (SUM(values[7]::numeric) / ${TOTAL_NUMBER_OF_QUESTIONS}) AS survey_score_question_7,
           (SUM(values[8]::numeric) / ${TOTAL_NUMBER_OF_QUESTIONS}) AS survey_score_question_8,
           (SUM(values[9]::numeric) / ${TOTAL_NUMBER_OF_QUESTIONS}) AS survey_score_question_9,
-          (SUM(values[10]::numeric) / ${TOTAL_NUMBER_OF_QUESTIONS}) AS survey_score_question_10,
+          (SUM(values[10]::numeric) / ${TOTAL_NUMBER_OF_QUESTIONS}) AS survey_score_question_10
         FROM "surveys"
       `
     )
-    .then((data) => {
-      const survey_scores = [
-        data[0][0].survey_score_question_1,
-        data[0][0].survey_score_question_2,
-        data[0][0].survey_score_question_3,
-        data[0][0].survey_score_question_4,
-        data[0][0].survey_score_question_5,
-        data[0][0].survey_score_question_6,
-        data[0][0].survey_score_question_7,
-        data[0][0].survey_score_question_8,
-        data[0][0].survey_score_question_9,
-        data[0][0].survey_score_question_10,
-      ];
-      res.status(200).send({
-        statusCode: 200,
-        success: true,
-        data: survey_scores,
-      });
+    const survey_scores = [
+      data[0][0].survey_score_question_1,
+      data[0][0].survey_score_question_2,
+      data[0][0].survey_score_question_3,
+      data[0][0].survey_score_question_4,
+      data[0][0].survey_score_question_5,
+      data[0][0].survey_score_question_6,
+      data[0][0].survey_score_question_7,
+      data[0][0].survey_score_question_8,
+      data[0][0].survey_score_question_9,
+      data[0][0].survey_score_question_10,
+    ];
+    return res.status(200).send({
+      statusCode: 200,
+      success: true,
+      data: survey_scores,
     });
+  }
+  catch(error){
+    console.error(error);
+  }
 };
 
 exports.refactoreMe2 = async (req, res) => {
@@ -71,6 +74,7 @@ exports.refactoreMe2 = async (req, res) => {
       message: "Cannot post survey.",
       success: false,
     });
+    return;
   }
 
   try{
@@ -79,17 +83,17 @@ exports.refactoreMe2 = async (req, res) => {
       SET dosurvey = True
       WHERE id = ${req.body.id}
     `);
+    
+    res.status(201).send({
+      statusCode: 201,
+      message: "Survey sent successfully!",
+      success: true,
+      updateData,
+    });
   }
   catch(error){
     console.log(error);
   }
-
-  res.status(201).send({
-    statusCode: 201,
-    message: "Survey sent successfully!",
-    success: true,
-    updateData,
-  });
 };
 
 exports.callmeWebSocket = async (req, res) => {
@@ -131,6 +135,7 @@ const getData = async (req, res) => {
         ],
       },
     });
+    return;
   }
 
   let live_threat_queries = await getLivethreatDataQuery();
