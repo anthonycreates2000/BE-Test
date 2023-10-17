@@ -19,7 +19,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // database
 const db = require("./app/models");
-const { callmeWebSocket, getData, refactoreMe1 } = require("./app/controllers/exampleController");
 
 db.sequelize.sync();
 
