@@ -47,7 +47,7 @@ describe("test rute refactoreMe1", () => {
   test("mendapatkan nilai rata-rata dari semua 10 survey", async () => {
     const response = await request(app)
       .get("/api/data/get_average_per_survey")
-      .expect(201);
+      .expect(200);
 
     const response_data = response.data;
 
