@@ -13,7 +13,7 @@ module.exports = (app) => {
 
   router.get(
     "/get_average_per_survey",
-    exampleController.refactoreMe1
+    async (req, res) => { await exampleController.refactoreMe1(req, res); }
   );
 
   router.get(
