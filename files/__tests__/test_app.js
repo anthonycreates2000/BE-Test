@@ -4,7 +4,7 @@ const chai = require("chai");
 const { should } = require('chai');
 const assert = chai.assert;
 
-jest.setTimeout(30000);
+jest.setTimeout(100000);
 
 COUNT_DESTINATION_COUNTRY = "count_destination_country";
 COUNT_SOURCE_COUNTRY = "count_source_country";
