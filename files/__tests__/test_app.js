@@ -1,8 +1,6 @@
 const app = require("../../server.js");
 const request = require("supertest");
 const chai = require("chai");
-const { should } = require('chai');
-const assert = chai.assert;
 
 jest.setTimeout(100000);
 
@@ -25,21 +23,22 @@ describe('test simple route hello', () => {
 
 describe('test rute get livethreat attacks', () => {
     test("mendapatkan data livethreat attacks", async () => {
-      const response = await request(app)
+      await request(app)
         .get("/api/data/get_livethreat_attacks")
-        .expect(201);
+        .expect(201)
+        .then((response) => {
+          const { success, data } = response.body;
+          const response_data = data;
 
-      const response_data = response.data;
+          console.log(response_data)
 
-      console.log(`Response data: ${response_data}`);
+          expect(success).toEqual(true);
 
-      assert.deepEqual(response_data.label, [
-        "court_destination_country",
-        "court_source_country",
-      ]);
-
-      should.ok(Number.isSafeInteger(response_data.total[0]));
-      should.ok(Number.isSafeInteger(response_data.total[1]));
+          expect(response_data.label[0]).toEqual("count_destination_country");
+          expect(response_data.label[1]).toEqual("count_source_country");
+          expect(typeof response_data.total[0]).toEqual("number");
+          expect(typeof response_data.total[1]).toEqual("number");
+        });
     });
 });
 
